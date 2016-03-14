@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
+
 /**
  * Created by Administrator on 2016/3/13.
  */
@@ -16,6 +17,7 @@ public class ShuDuView extends View {
     private Paint hilitePaint = new Paint();//白色画笔
     private Paint lightPaint = new Paint();//浅色画笔
     private Paint numPaint = new Paint();//初始数字画笔
+    private Game game = new Game();
 
     public ShuDuView(Context context) {
         super(context);
@@ -68,6 +70,10 @@ public class ShuDuView extends View {
         numPaint.setTextAlign(Paint.Align.CENTER);//设置水平方向居中
         Paint.FontMetrics fm = numPaint.getFontMetrics();
         float x = width/2;
-        canvas.drawText("1", 3*width+x, 3*width-width*0.25f, numPaint);
+        float y = width/2 - (fm.ascent + fm.descent)/2;
+        for (int i=0; i<9; i++) {
+            for (int j=0; j<9; j++)
+                canvas.drawText(game.getNumStr(i, j), i * width + x, j * width + y, numPaint);
+        }
     }
 }
