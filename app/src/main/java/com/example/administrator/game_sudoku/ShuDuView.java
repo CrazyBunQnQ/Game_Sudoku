@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -74,5 +76,23 @@ public class ShuDuView extends View {
             for (int j=0; j<9; j++)
                 canvas.drawText(game.getNumStr(i, j), i * width + x, j * width + y, numPaint);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() != MotionEvent.ACTION_DOWN) {
+            return super.onTouchEvent(event);
+        }
+        if (event.getX()>width*9 || event.getY()>width*9) {
+            return super.onTouchEvent(event);
+        }
+
+        int x = (int)(event.getX()/width);
+        int y = (int)(event.getY()/width);
+        int used[] = game.getUsedNumsByCoord(x, y);
+        for (int i=0; i<used.length; i++) {
+            Log.i("Game", String.valueOf(used[i]));
+        }
+        return super.onTouchEvent(event);
     }
 }

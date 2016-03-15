@@ -4,19 +4,21 @@ package com.example.administrator.game_sudoku;
  * Created by Administrator on 2016/3/14.
  */
 public class Game {
-    private int[][] sudokuResult;
-
+    private int[][] sudoku;
+    //用来存储每个单元格不可使用的数字
+    private int used[][][] = new int[9][9][];
 
     public Game() {
         baseSudoku();
-        sudokuResult = initSudoku(sudokuResult, 15);
+        sudoku = initSudoku(sudoku, 15);
+        calculateAllUsedNums();
     }
 
     /**
      * 初始化为最原始数独数组
      */
     public void baseSudoku() {
-        sudokuResult = new int[][]{
+        sudoku = new int[][]{
                 {1, 2, 3, 4, 5, 6, 7, 8, 9},
                 {4, 5, 6, 7, 8, 9, 1, 2, 3},
                 {7, 8, 9, 1, 2, 3, 4, 5, 6},
@@ -30,7 +32,7 @@ public class Game {
     }
 
     private int getNum(int x, int y) {
-        return sudokuResult[x][y];
+        return sudoku[x][y];
     }
 
     public String getNumStr(int x, int y) {
@@ -75,7 +77,7 @@ public class Game {
                 exchangeC(numsArray, j, a, b);
             }
         }
-        digHoles(18, false);
+        digHoles(20, false);
         return numsArray;
     }
 
@@ -137,9 +139,8 @@ public class Game {
         int rows[] = new int [9];
         changeTo(rows, -1, holes%9);
         for (int i=0; i<9; i++) {
-            changeTo(this.sudokuResult[i], 0, rows[i] == 0? holesPerRow: holesPerRow + 1);
+            changeTo(this.sudoku[i], 0, rows[i] == 0? holesPerRow: holesPerRow + 1);
         }
-
     }
 
     /**
@@ -157,5 +158,72 @@ public class Game {
                 arr[rand] = target;
             }
         }
+    }
+
+    public int[] getUsedNumsByCoord(int x, int y) {
+        return used[x][y];
+    }
+
+    public void calculateAllUsedNums() {
+        for (int x=0; x<9; x++) {
+            for (int y=0; y<9; y++) {
+                used[x][y] = calculateUsedNums(x, y);
+            }
+        }
+    }
+
+    public int[] calculateUsedNums(int x, int y) {
+        int nums[] = new int[9];
+
+        for (int i=0; i<9; i++) {
+            if (i == x) {
+                continue;
+            }
+            int temp = getNum(i, y);
+            if (temp != 0) {
+                nums[temp-1] = temp;
+            }
+        }
+
+        for (int i=0; i<9; i++) {
+            if (i ==y) {
+                continue;
+            }
+            int temp = getNum(x, i);
+            if (temp !=0) {
+                nums[temp-1] = temp;
+            }
+        }
+
+        int startX = (x/3)*3;
+        int startY = (y/3)*3;
+        for (int i=startX; i<startX+3; i++) {
+            for (int j=startY; j<startY+3; j++) {
+                if (i==x && j==y) {
+                    continue;
+                }
+                int temp = getNum(i, j);
+                if (temp !=0) {
+                    nums[temp-1] = temp;
+                }
+            }
+        }
+
+        //删掉usedNums中的0
+        int unused = 0;
+        for (int i:nums) {
+            if (i != 0) {
+                unused ++;
+            }
+        }
+        int usedNums[] = new int[unused];
+        unused = 0;
+        for (int i:nums) {
+            if (i != 0) {
+                unused ++;
+                usedNums[unused-1] = i;
+            }
+        }
+        return usedNums;
     }
 }
