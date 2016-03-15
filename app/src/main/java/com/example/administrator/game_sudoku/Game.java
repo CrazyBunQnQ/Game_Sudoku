@@ -4,8 +4,6 @@ package com.example.administrator.game_sudoku;
  * Created by Administrator on 2016/3/14.
  */
 public class Game {
-    private static final String TAG = "Game_Sudoku";
-    private final String str = "123456789456789123789123456" + "234567891567891234891234567" + "345678912678912345912345678";
     private int[][] sudokuResult;
 
 
@@ -37,9 +35,9 @@ public class Game {
 
     public String getNumStr(int x, int y) {
         int v = getNum(x, y);
-//        if (v == 0) {
-//            return "";
-//        }
+        if (v == 0) {
+            return "";
+        }
         return String.valueOf(v);
     }
 
@@ -77,6 +75,7 @@ public class Game {
                 exchangeC(numsArray, j, a, b);
             }
         }
+        digHoles(18, false);
         return numsArray;
     }
 
@@ -125,5 +124,38 @@ public class Game {
             }
         }
         return nums;
+    }
+
+    /**
+     * 给数独棋盘挖坑
+     * @param nums 挖坑数量或初始数字数量
+     * @param isHoles 是否是坑的数量，false则表示初始数字的数量
+     */
+    private void digHoles(int nums, boolean isHoles) {
+        int holes = isHoles?nums:81-nums;
+        int holesPerRow = holes/9;
+        int rows[] = new int [9];
+        changeTo(rows, -1, holes%9);
+        for (int i=0; i<9; i++) {
+            changeTo(this.sudokuResult[i], 0, rows[i] == 0? holesPerRow: holesPerRow + 1);
+        }
+
+    }
+
+    /**
+     * 将一维数组中随机几个数字改成目标数字
+     * @param arr 一维数组
+     * @param target 目标数字
+     * @param count 随机元素个数
+     */
+    private void changeTo(int[] arr, int target, int count) {
+        for (int i=0; i<count; i++) {
+            int rand = (int) (Math.random()*arr.length);
+            if (arr[rand] == target) {
+                i--;
+            } else {
+                arr[rand] = target;
+            }
+        }
     }
 }

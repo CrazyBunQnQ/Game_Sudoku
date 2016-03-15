@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
-
 /**
  * Created by Administrator on 2016/3/13.
  */
