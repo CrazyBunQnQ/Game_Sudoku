@@ -5,8 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 /**
  * Created by Administrator on 2016/3/13.
@@ -89,10 +92,26 @@ public class ShuDuView extends View {
 
         int x = (int)(event.getX()/width);
         int y = (int)(event.getY()/width);
+        if (game.getNumStr(x, y) != "") {
+            return super.onTouchEvent(event);
+        }
         int used[] = game.getUsedNumsByCoord(x, y);
         for (int i=0; i<used.length; i++) {
             Log.i("Game", String.valueOf(used[i]));
         }
-        return super.onTouchEvent(event);
+
+        KeysDialog keysDialog = new KeysDialog(getContext(), used);
+        keysDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);//不要Title
+
+        Window dialogWindow = keysDialog.getWindow();
+
+        WindowManager.LayoutParams layoutParams = dialogWindow.getAttributes();//获取对话框当前的参数值
+        dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);//设置原始坐标为左上角
+        layoutParams.x = (int)((x - 1.4) * width);
+        layoutParams.y = (int)((y - 1.4) * width);
+
+        keysDialog.show();
+
+        return true;
     }
 }
