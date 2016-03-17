@@ -226,4 +226,26 @@ public class Game {
         }
         return usedNums;
     }
+
+    protected int[] getUsedNumbers(int x, int y) {
+        return used[x][y];
+    }
+
+    private void setNumber(int x, int y, int number) {
+        sudoku[x][y] = number;
+    }
+
+    public boolean setNumberIfValid(int x, int y, int value) {
+        int numbers[] = getUsedNumbers(x, y);
+        if (value != 0) {
+            for (int number:numbers) {
+                if (value == number) {
+                    return false;
+                }
+            }
+        }
+        setNumber(x, y, value);
+        calculateAllUsedNums();
+        return true;
+    }
 }

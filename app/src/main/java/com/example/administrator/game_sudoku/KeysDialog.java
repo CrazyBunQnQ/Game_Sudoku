@@ -12,16 +12,17 @@ import android.widget.Button;
 public class KeysDialog extends Dialog {
     private final Button keys[] = new Button[9];
     private final int used[];
+    private ShuDuView shuDuView;
 
-    public KeysDialog(Context context, int[] used) {
+    public KeysDialog(Context context, int[] used, ShuDuView shuDuView) {
         super(context);
         this.used = used;
+        this.shuDuView = shuDuView;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setTitle("Put in number by click");
         setContentView(R.layout.dialog_keys);
         assignViews();
         for (int i=0; i<used.length; i++) {
@@ -29,6 +30,7 @@ public class KeysDialog extends Dialog {
                 keys[used[i] - 1].setVisibility(View.INVISIBLE);
             }
         }
+        setListenners();
     }
 
     private void assignViews() {
@@ -43,4 +45,20 @@ public class KeysDialog extends Dialog {
         keys[8] = (Button)findViewById(R.id.key_9);
     }
 
+    private void returnResult(int number) {
+        shuDuView.setNumber(number);
+        dismiss();
+    }
+
+    private void setListenners() {
+        for (int i=0; i<keys.length; i++) {
+            final int number = i + 1;
+            keys[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    returnResult(number);
+                }
+            });
+        }
+    }
 }
