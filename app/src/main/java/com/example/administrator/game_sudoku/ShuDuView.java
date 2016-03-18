@@ -24,8 +24,10 @@ public class ShuDuView extends View {
     private Paint hilitePaint = new Paint();//白色画笔
     private Paint lightPaint = new Paint();//浅色画笔
     private Paint numPaint = new Paint();//初始数字画笔
+    private Paint newNumPaint = new Paint();//用户输入的数字画笔
 
     private Game game = new Game();
+    private Canvas canvas;
 
     public ShuDuView(Context context) {
         super(context);
@@ -57,6 +59,8 @@ public class ShuDuView extends View {
         setBackGround(canvas);
         initNumbers(canvas);
 
+        this.canvas = canvas;
+
         super.onDraw(canvas);
     }
 
@@ -72,16 +76,23 @@ public class ShuDuView extends View {
     }
 
     private void initNumbers(Canvas canvas) {
+        //初始数字设置
         numPaint.setColor(Color.BLACK);
         numPaint.setStyle(Paint.Style.STROKE);//设置空心
         numPaint.setTextSize(width * 0.75f);//设置文本大小为单元格宽度的四分之三
         numPaint.setTextAlign(Paint.Align.CENTER);//设置水平方向居中
+        //用户输入的数字设置
+        newNumPaint.setColor(Color.BLUE);
+        newNumPaint.setStyle(Paint.Style.STROKE);
+        newNumPaint.setTextSize(width * 0.75f);
+        newNumPaint.setTextAlign(Paint.Align.CENTER);
+
         Paint.FontMetrics fm = numPaint.getFontMetrics();
         float x = width/2;
         float y = width/2 - (fm.ascent + fm.descent)/2;
         for (int i=0; i<9; i++) {
             for (int j=0; j<9; j++)
-                canvas.drawText(game.getNumStr(i, j), i * width + x, j * width + y, numPaint);
+                canvas.drawText(game.getNumStr(i, j), i * width + x, j * width + y, game.isAbleToEdit(i, j)? newNumPaint: numPaint);
         }
     }
 
@@ -96,7 +107,7 @@ public class ShuDuView extends View {
 
         numberX = (int)(event.getX()/width);
         numberY = (int)(event.getY()/width);
-        if (game.getNumStr(numberX, numberY) != "") {
+        if (!game.isAbleToEdit(numberX, numberY)) {
             return super.onTouchEvent(event);
         }
         int used[] = game.getUsedNumsByCoord(numberX, numberY);
@@ -104,15 +115,14 @@ public class ShuDuView extends View {
             Log.i("Game", String.valueOf(used[i]));
         }
 
-        KeysDialog keysDialog = new KeysDialog(getContext(), used, this);
-        keysDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);//不要Title
+        KeysDialog keysDialog = new KeysDialog(getContext(), used, this, R.style.dialog, (int)(width*3), (int)(width*3));
 
         Window dialogWindow = keysDialog.getWindow();
-
         WindowManager.LayoutParams layoutParams = dialogWindow.getAttributes();//获取对话框当前的参数值
         dialogWindow.setGravity(Gravity.LEFT | Gravity.TOP);//设置原始坐标为左上角
-        layoutParams.x = (int)((numberX - 1.4) * width);
-        layoutParams.y = (int)((numberY - 1.4) * width);
+        //设置对话框相对于原始坐标的位置
+        layoutParams.x = (int)((numberX - 1) * width);
+        layoutParams.y = (int)((numberY - 1) * width);
 
         keysDialog.show();
 
@@ -121,7 +131,7 @@ public class ShuDuView extends View {
 
     public void setNumber(int number) {
         if (game.setNumberIfValid(numberX, numberY, number)) {
-            invalidate();
+            invalidate();//刷新界面，重新调用onDraw方法
         }
     }
 }

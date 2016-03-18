@@ -5,11 +5,13 @@ package com.example.administrator.game_sudoku;
  */
 public class Game {
     private int[][] sudoku;
+    //保存每个数字是否是用户输入的
+    private boolean[][] isNewNumber = new boolean[9][9];
     //用来存储每个单元格不可使用的数字
     private int used[][][] = new int[9][9][];
 
     public Game() {
-        baseSudoku();
+        getBaseSudoku();
         sudoku = initSudoku(sudoku, 15);
         calculateAllUsedNums();
     }
@@ -17,7 +19,7 @@ public class Game {
     /**
      * 初始化为最原始数独数组
      */
-    public void baseSudoku() {
+    public void getBaseSudoku() {
         sudoku = new int[][]{
                 {1, 2, 3, 4, 5, 6, 7, 8, 9},
                 {4, 5, 6, 7, 8, 9, 1, 2, 3},
@@ -41,6 +43,11 @@ public class Game {
             return "";
         }
         return String.valueOf(v);
+    }
+
+    public boolean isAbleToEdit(int x, int y) {
+        boolean a = isNewNumber[x][y];
+        return a;
     }
 
     /**
@@ -137,25 +144,26 @@ public class Game {
         int holes = isHoles?nums:81-nums;
         int holesPerRow = holes/9;
         int rows[] = new int [9];
-        changeTo(rows, -1, holes%9);
         for (int i=0; i<9; i++) {
-            changeTo(this.sudoku[i], 0, rows[i] == 0? holesPerRow: holesPerRow + 1);
+            changeTo(this.sudoku, i, 0, rows[i] == 0? holesPerRow: holesPerRow + 1);
         }
     }
 
     /**
-     * 将一维数组中随机几个数字改成目标数字
-     * @param arr 一维数组
+     * 将二维数组中某个数组的随机几个数字改成目标数字
+     * @param arr 二维数组
+     * @param index 一维数组位置
      * @param target 目标数字
      * @param count 随机元素个数
      */
-    private void changeTo(int[] arr, int target, int count) {
+    private void changeTo(int[][] arr, int index, int target, int count) {
         for (int i=0; i<count; i++) {
-            int rand = (int) (Math.random()*arr.length);
-            if (arr[rand] == target) {
+            int rand = (int) (Math.random()*arr[index].length);
+            if (arr[index][rand] == target) {
                 i--;
             } else {
-                arr[rand] = target;
+                arr[index][rand] = target;
+                this.isNewNumber[index][rand] = true;
             }
         }
     }
