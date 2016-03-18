@@ -33,10 +33,22 @@ public class Game {
         };
     }
 
+    /**
+     * 获取数独指定位置的数字
+     * @param x
+     * @param y
+     * @return int
+     */
     private int getNum(int x, int y) {
         return sudoku[x][y];
     }
 
+    /**
+     * 获取数独指定位置的数字并转为字符串
+     * @param x
+     * @param y
+     * @return String
+     */
     public String getNumStr(int x, int y) {
         int v = getNum(x, y);
         if (v == 0) {
@@ -45,9 +57,14 @@ public class Game {
         return String.valueOf(v);
     }
 
+    /**
+     * 返回数独中指定位置是否可以点击输入
+     * @param x
+     * @param y
+     * @return boolean
+     */
     public boolean isAbleToEdit(int x, int y) {
-        boolean a = isNewNumber[x][y];
-        return a;
+        return isNewNumber[x][y];
     }
 
     /**
@@ -168,10 +185,9 @@ public class Game {
         }
     }
 
-    public int[] getUsedNumsByCoord(int x, int y) {
-        return used[x][y];
-    }
-
+    /**
+     * 计算数独中每个位置不可使用的数字
+     */
     public void calculateAllUsedNums() {
         for (int x=0; x<9; x++) {
             for (int y=0; y<9; y++) {
@@ -180,9 +196,16 @@ public class Game {
         }
     }
 
+    /**
+     * 计算数独中指定位置不可使用的数字
+     * @param x
+     * @param y
+     * @return
+     */
     public int[] calculateUsedNums(int x, int y) {
         int nums[] = new int[9];
 
+        //添加该位置所在列已经使用过的数字
         for (int i=0; i<9; i++) {
             if (i == x) {
                 continue;
@@ -193,6 +216,7 @@ public class Game {
             }
         }
 
+        //添加该位置所在行已经使用过的数字
         for (int i=0; i<9; i++) {
             if (i ==y) {
                 continue;
@@ -203,6 +227,7 @@ public class Game {
             }
         }
 
+        //添加该位置所在3*3方格中已经使用过的数字
         int startX = (x/3)*3;
         int startY = (y/3)*3;
         for (int i=startX; i<startX+3; i++) {
@@ -235,10 +260,22 @@ public class Game {
         return usedNums;
     }
 
+    /**
+     * 获取数独中指定位置不可使用的数字数组
+     * @param x
+     * @param y
+     * @return int[]
+     */
     protected int[] getUsedNumbers(int x, int y) {
         return used[x][y];
     }
 
+    /**
+     * 数独中设置指定位置的数字
+     * @param x
+     * @param y
+     * @param number
+     */
     private void setNumber(int x, int y, int number) {
         sudoku[x][y] = number;
     }

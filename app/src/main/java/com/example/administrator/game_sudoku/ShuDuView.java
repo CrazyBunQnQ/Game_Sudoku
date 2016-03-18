@@ -57,7 +57,7 @@ public class ShuDuView extends View {
         lightPaint.setColor(getResources().getColor(R.color.lightGray));
 
         setBackGround(canvas);
-        initNumbers(canvas);
+        refreshNumbers(canvas);
 
         this.canvas = canvas;
 
@@ -75,7 +75,7 @@ public class ShuDuView extends View {
         }
     }
 
-    private void initNumbers(Canvas canvas) {
+    private void refreshNumbers(Canvas canvas) {
         //初始数字设置
         numPaint.setColor(Color.BLACK);
         numPaint.setStyle(Paint.Style.STROKE);//设置空心
@@ -110,7 +110,7 @@ public class ShuDuView extends View {
         if (!game.isAbleToEdit(numberX, numberY)) {
             return super.onTouchEvent(event);
         }
-        int used[] = game.getUsedNumsByCoord(numberX, numberY);
+        int used[] = game.getUsedNumbers(numberX, numberY);
         for (int i=0; i<used.length; i++) {
             Log.i("Game", String.valueOf(used[i]));
         }
