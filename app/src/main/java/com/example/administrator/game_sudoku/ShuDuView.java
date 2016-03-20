@@ -16,6 +16,11 @@ import android.view.WindowManager;
  */
 public class ShuDuView extends View {
     private float width;//单元格的宽度
+    //按钮的起始位置
+    private float btnStartX;
+    private float btnStartY;
+    private float btnWidth;//按钮宽度
+    private float btnHeight;//按钮高度
     private int numberX;
     private int numberY;
 
@@ -25,6 +30,7 @@ public class ShuDuView extends View {
     private Paint lightPaint = new Paint();//浅色画笔
     private Paint numPaint = new Paint();//初始数字画笔
     private Paint newNumPaint = new Paint();//用户输入的数字画笔
+    private Paint btnPaint = new Paint();//按钮画笔
 
     private Game game = new Game();
     private Canvas canvas;
@@ -41,6 +47,19 @@ public class ShuDuView extends View {
      */
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         this.width = w>h?h/9f:w/9f;
+        if (w > h) {
+            this.width = h/9f;
+            this.btnWidth = (w-width*9)*3/5;
+            this.btnHeight = (w-width*9)*1/4;
+            this.btnStartX = width*9 + btnWidth/3;
+            this.btnStartY = btnHeight/2;
+        } else {
+            this.width = w/9f;
+            this.btnWidth = w*3/5;
+            this.btnHeight = (h-width*9)*1/4;
+            this.btnStartX = btnWidth/3;
+            this.btnStartY = width*9 + btnHeight/2;
+        }
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -55,6 +74,11 @@ public class ShuDuView extends View {
         hilitePaint.setColor(getResources().getColor(R.color.hiliteGray));
         lightPaint.setStrokeWidth(2);
         lightPaint.setColor(getResources().getColor(R.color.lightGray));
+        btnPaint.setStrokeWidth(2);
+        btnPaint.setColor(getResources().getColor(R.color.colorAccent));
+        btnPaint.setStyle(Paint.Style.FILL);//设置空心
+        canvas.drawRect(btnStartX, btnStartY, btnStartX + btnWidth, btnStartY + btnHeight, btnPaint);
+        canvas.drawRect(btnStartX, btnStartY + btnHeight * 3 / 2, btnStartX + btnWidth, btnStartY + btnHeight * 5 / 2, btnPaint);
 
         setBackGround(canvas);
         refreshNumbers(canvas);
@@ -94,6 +118,9 @@ public class ShuDuView extends View {
             for (int j=0; j<9; j++)
                 canvas.drawText(game.getNumStr(i, j), i * width + x, j * width + y, game.isAbleToEdit(i, j)? newNumPaint: numPaint);
         }
+
+        canvas.drawText("撤销一步", btnStartX + btnWidth/2, btnStartY + btnHeight/2 - (fm.ascent + fm.descent)/2, numPaint);
+        canvas.drawText("重新开始", btnStartX + btnWidth/2, btnStartY + btnHeight*2 - (fm.ascent + fm.descent)/2, numPaint);
     }
 
     @Override
@@ -102,6 +129,16 @@ public class ShuDuView extends View {
             return super.onTouchEvent(event);
         }
         if (event.getX()>width*9 || event.getY()>width*9) {
+            if (event.getX()>btnStartX && event.getX()<btnStartX + btnWidth) {
+                if (event.getY() > btnStartY && event.getY() < btnStartY + btnHeight) {//撤销
+                    return super.onTouchEvent(event);
+                }
+                if (event.getY() > btnStartY + btnHeight*3/2 && event.getY() < btnStartY + btnHeight*5/2) {//重新开始
+                    game = new Game();
+                    invalidate();
+                    return true;
+                }
+            }
             return super.onTouchEvent(event);
         }
 

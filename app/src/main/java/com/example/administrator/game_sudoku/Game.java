@@ -160,9 +160,10 @@ public class Game {
     private void digHoles(int nums, boolean isHoles) {
         int holes = isHoles?nums:81-nums;
         int holesPerRow = holes/9;
-        int rows[] = new int [9];
+        int rows[][] = new int [1][9];
+        changeTo(rows, 0, -1, holes%9);
         for (int i=0; i<9; i++) {
-            changeTo(this.sudoku, i, 0, rows[i] == 0? holesPerRow: holesPerRow + 1);
+            changeTo(this.sudoku, i, 0, rows[0][i] == 0? holesPerRow: holesPerRow + 1);
         }
     }
 
@@ -180,7 +181,9 @@ public class Game {
                 i--;
             } else {
                 arr[index][rand] = target;
-                this.isNewNumber[index][rand] = true;
+                if (arr.length > 1) {
+                    this.isNewNumber[index][rand] = true;
+                }
             }
         }
     }
